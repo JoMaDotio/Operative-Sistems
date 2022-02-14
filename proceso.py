@@ -8,7 +8,7 @@ class Proceso:
         self.ope = ope
         self.num1 = num1
         self.num2 = num2
-        self.num_ = None
+        self.num_lote = None
 
     def show_info(self):
         print("Id: " + str(self.id))
