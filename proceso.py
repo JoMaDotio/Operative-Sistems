@@ -3,7 +3,7 @@ class Proceso:
     def __init__(self, time, id, ope, num1, num2):
         self.id = id
         self.time = time
-        self.time_reainder = None
+        self.time_remainder = None
         self.result = None
         self.ope = ope
         self.num1 = num1
