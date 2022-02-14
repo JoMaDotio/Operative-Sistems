@@ -1,9 +1,9 @@
 # hello
 class Proceso:
-    def __init__(self, name, time, id, ope, num1, num2):
+    def __init__(self, time, id, ope, num1, num2):
         self.id = id
-        self.name = name
         self.time = time
+        self.time_reainder = None
         self.result = None
         self.ope = ope
         self.num1 = num1
@@ -12,7 +12,6 @@ class Proceso:
 
     def show_info(self):
         print("Id: " + str(self.id))
-        print("Nombre: " + self.name)
         print("Operacion: " + str(self.num1) + self.ope + str(self.num2))
         print("TME: " + str(self.time))
 
