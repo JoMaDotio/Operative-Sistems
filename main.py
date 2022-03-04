@@ -152,7 +152,6 @@ def main():
             # We take the first process from the queue to enter and save it temporaly
             temp_update = news.pop(0)
             temp_update.come_time = global_counter  # Set his comming time on memory
-            print("----Aqui todo bien----", temp_update.come_time)
             ready.append(temp_update)  # We insert the process to readdy
             # Increse the counter of process in memory, the main rason of that are some validations
             # comming ahead
@@ -226,6 +225,7 @@ def main():
                 bloked.append(in_execution[0])
                 in_execution.pop()
                 break
+            print("Procesos en cola de nuevos: " + str(len(news)))
             # Display the global counter
             print("Contador global: " + str(global_counter))
             # increment the time on of the process
@@ -255,7 +255,7 @@ def main():
             for pro in done:
                 pro.show_end()
             # We sleep 0.1 second
-            sleep(0.1)
+            sleep(1)
             # If the flag of keyboar not is 'p', we clear the console
             if flag != "p":
                 os.system("cls")
