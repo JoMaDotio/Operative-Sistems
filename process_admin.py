@@ -90,6 +90,11 @@ class Process_Admin:
                     self.keyboard_flag = "p"
                 else:
                     self.keyboard_flag = "c"
+            elif self.keyboard_flag == "t":
+                if leter != "c":
+                    self.keyboard_flag = "t"
+                else:
+                    self.keyboard_flag = "c"
             elif leter == "p":
                 self.keyboard_flag = "p"
                 print("Programa en pausa")
@@ -101,6 +106,8 @@ class Process_Admin:
                 self.keyboard_flag = "c"
             elif leter == "n":
                 self.keyboard_flag = "n"
+            elif leter == "t":
+                self.keyboard_flag = "t"
         return self.keyboard_flag
 
     def update_bloked(self):
@@ -177,7 +184,7 @@ class Process_Admin:
                 time_on = self.in_execution[0].time - \
                     self.in_execution[0].time_remainder
             while (time_on < time_left):
-                if (self.endless_flag and (len(self.news) == 0) and on_memory <= 1):
+                if (self.endless_flag and (len(self.news) == 0) and len(self.blocked) == 0):
                     self.endless_flag = False
                     self.flag_done = True
                     break
@@ -186,6 +193,9 @@ class Process_Admin:
                 self.keyboard_flag = self.handle_keyboard_event()
 
                 if self.keyboard_flag == "p":
+                    continue
+                elif self.keyboard_flag == "t":
+                    print("BCP")
                     continue
                 elif self.keyboard_flag == "e":
                     self.in_execution[0].result = "Error"
