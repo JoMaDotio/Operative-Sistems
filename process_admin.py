@@ -79,7 +79,7 @@ class Process_Admin:
         if self.keyboard_flag == "n":
             self.keyboard_flag = "c"
 
-    def handle_keyboard_event(self):
+    def handle_keyboard_event(self, time_o):
 
         if self.endless_flag:
             return self.keyboard_flag
@@ -108,6 +108,9 @@ class Process_Admin:
                 self.keyboard_flag = "n"
             elif leter == "t":
                 self.keyboard_flag = "t"
+                print("BCP")
+                self.in_execution[0].time_remainder = self.in_execution[0].time - time_o
+                self.show_BCP()
         return self.keyboard_flag
 
     def update_bloked(self):
@@ -144,6 +147,44 @@ class Process_Admin:
         print("Id\tOperacion\tResultado")
         for pro in self.done:
             pro.show_end()
+
+    def show_BCP(self):
+        print(f"Contador global: {self.global_counter}")
+        print(f"ID\tOperacion\tResultado\tEstado\tTME\tTLleg\tTFin\tTRet\tTRes\tTEsp\tTEje")
+
+        # Ejecucion
+        print("-------Proceso en ejecucion------")
+        for pro in self.in_execution:
+            print(f"{pro.id}\t{pro.show_operation()}\t\t{None}\t\tExec\t{pro.time}\t{pro.come_time}\t{pro.end_time}\t{pro.return_time}\t{pro.response_time}\t{self.global_counter - (pro.come_time) - (pro.time-pro.time_remainder) }\t{pro.time-pro.time_remainder}")
+
+        # listos
+        if len(self.ready) > 0:
+            print("------Procesos Listos--------")
+        for pro in self.ready:
+            if pro.response_time == None:
+                exe_time = None
+                print(f"{pro.id}\t{pro.show_operation()}\t\t{None}\t\tReady\t{pro.time}\t{pro.come_time}\t{pro.end_time}\t{pro.return_time}\t{pro.response_time}\t{self.global_counter - (pro.come_time) - (0) }\t{exe_time}")
+            else:
+                exe_time = pro.time-pro.time_remainder
+                print(f"{pro.id}\t{pro.show_operation()}\t\t{None}\t\tReady\t{pro.time}\t{pro.come_time}\t{pro.end_time}\t{pro.return_time}\t{pro.response_time}\t{self.global_counter - (pro.come_time) - (pro.time-pro.time_remainder) }\t{exe_time}")
+
+        # bloquedos
+        if len(self.blocked) > 0:
+            print("------Procesos bloqueados-----")
+        for pro in self.blocked:
+            print(f"{pro.id}\t{pro.show_operation()}\t\t{None}\t\tBlocked\t{pro.time}\t{pro.come_time}\t{pro.end_time}\t{pro.return_time}\t{pro.response_time}\t{self.global_counter - (pro.come_time) - (pro.time-pro.time_remainder) }\t{pro.time-pro.time_remainder}")
+
+        # terminados
+        if len(self.done) > 0:
+            print("------Procesos terminados--------")
+        for pro in self.done:
+            print(f"{pro.id}\t{pro.show_operation()}\t\t{pro.result}\t\tEnd\t{pro.time}\t{pro.come_time}\t{pro.end_time}\t{pro.end_time-pro.come_time}\t{pro.response_time}\t{(pro.end_time-pro.come_time)-pro.execute_time}\t{pro.execute_time}")
+
+        # Procesos nuevos al final
+        if len(self.news) > 0:
+            print("------Procesos nuevos-----")
+        for pro in self.news:
+            print(f"{pro.id}\t{pro.show_operation()}\t\t{None}\t\tnew\t{pro.time}\t{pro.come_time}\t{pro.end_time}\t{pro.return_time}\t{pro.response_time}\t{pro.wait_time}\t{pro.execute_time}")
 
     def administrator(self):
         num_pro = int(input("Cuantos procesos quieres: "))
@@ -190,12 +231,12 @@ class Process_Admin:
                     break
                 if self.endless_flag and self.update:
                     break
-                self.keyboard_flag = self.handle_keyboard_event()
+                self.keyboard_flag = self.handle_keyboard_event(time_on)
 
                 if self.keyboard_flag == "p":
                     continue
                 elif self.keyboard_flag == "t":
-                    print("BCP")
+
                     continue
                 elif self.keyboard_flag == "e":
                     self.in_execution[0].result = "Error"
@@ -214,10 +255,10 @@ class Process_Admin:
                         self.ready.append(self.news.pop(0))
                         on_memory += 1
 
-                print(f"Procesos en la cola de nuevos {len(self.news)}")
-                print(f"Contador global: {self.global_counter}")
                 time_on += 1
                 self.global_counter += 1
+                print(f"Procesos en la cola de nuevos {len(self.news)}")
+                print(f"Contador global: {self.global_counter}")
                 self.update = self.update_bloked()
                 self.show_ready_queue()
                 self.show_in_execution(time_left, time_on)

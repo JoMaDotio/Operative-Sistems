@@ -65,3 +65,6 @@ class Proceso:
 
     def show_bloked(self):
         print(f"{self.id}\t{self.time-self.time_remainder}\t{self.blocked_time}")
+
+    def show_operation(self):
+        return f"{self.num1}{self.ope}{self.num2}"
