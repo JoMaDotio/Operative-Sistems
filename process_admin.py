@@ -161,7 +161,6 @@ class Process_Admin:
         if len(self.ready) > 0:
             print("------Procesos Listos--------")
         for pro in self.ready:
-            print(pro.response_time)
             if pro.response_time == None:
                 exe_time = None
                 print(f"{pro.id}\t{pro.show_operation()}\t\t{None}\t\tReady\t{pro.time}\t{pro.come_time}\t{pro.end_time}\t{pro.return_time}\t{pro.response_time}\t{self.global_counter - (pro.come_time) - (0) }\t{exe_time}")
