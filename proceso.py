@@ -41,7 +41,7 @@ class Proceso:
             rest = "Error"
         else:
             rest = f"{self.result:.2f}"
-        print(f"{self.id}\t{str(self.num1) + self.ope + str(self.num2)}\t\t\{rest}\t\t{self.come_time}\t{self.end_time}\t{self.end_time-self.come_time}\t{self.response_time}\t{(self.end_time-self.come_time)-self.execute_time}\t{self.execute_time}")
+        print(f"{self.id}\t{str(self.num1) + self.ope + str(self.num2)}\t\t{rest}\t\t{self.come_time}\t{self.end_time}\t{self.end_time-self.come_time}\t{self.response_time}\t{(self.end_time-self.come_time)-self.execute_time}\t{self.execute_time}")
 
     def do_operation(self):
         if self.ope == "/" or self.ope == "%":
