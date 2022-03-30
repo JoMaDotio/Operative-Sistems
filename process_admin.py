@@ -188,6 +188,7 @@ class Process_Admin:
 
     def administrator(self):
         num_pro = int(input("Cuantos procesos quieres: "))
+        self.quantum = int(input("Ingrese el Quantum para RR: "))
         self.capture_process(num_pro)
         # cont_ready = len(self.ready)
         # cont_blocked = len(self.blocked)
@@ -220,11 +221,20 @@ class Process_Admin:
 
             time_left = self.in_execution[0].time
             time_on = 0
+            time_q = 0
+            quantum_flag = False
             if (self.in_execution[0].time_remainder != None):
                 time_left = self.in_execution[0].time_remainder
                 time_on = self.in_execution[0].time - \
                     self.in_execution[0].time_remainder
             while (time_on < time_left):
+                if not (time_q < self.quantum):
+                    self.in_execution[0].time_remainder = self.in_execution[0].time - time_on
+                    self.ready.append(self.in_execution[0])
+                    self.in_execution.pop()
+                    quantum_flag = True
+                    break
+
                 if (self.endless_flag and (len(self.news) == 0) and len(self.blocked) == 0):
                     self.endless_flag = False
                     self.flag_done = True
@@ -256,6 +266,7 @@ class Process_Admin:
                         on_memory += 1
 
                 time_on += 1
+                time_q += 1
                 self.global_counter += 1
                 print(f"Procesos en la cola de nuevos {len(self.news)}")
                 print(f"Contador global: {self.global_counter}")
@@ -270,6 +281,9 @@ class Process_Admin:
                     os.system("cls")
             if self.flag_done:
                 break
+
+            if quantum_flag:
+                continue
 
             if self.keyboard_flag != "i" and not self.endless_flag:
                 if self.in_execution[0].end_time == None:
