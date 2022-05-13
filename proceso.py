@@ -14,6 +14,7 @@ class Proceso:
         self.response_time = None
         self.wait_time = None
         self.blocked_time = 0
+        self.size = None
 
     def calculate_times(self):
         self.return_time = self.end_time - self.come_time

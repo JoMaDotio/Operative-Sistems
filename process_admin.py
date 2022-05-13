@@ -2,10 +2,8 @@ import random
 import os
 import msvcrt
 from time import sleep
-from turtle import up
-
-from matplotlib.pyplot import flag
 from proceso import *
+from table_sp import *
 
 
 class Process_Admin:
@@ -26,6 +24,8 @@ class Process_Admin:
         self.endless_flag = False
 
         self.endless_process = Proceso(10, "Proceso nulo", "+", 1, 1)
+        self.endless_process.size = 4
+        self.table_proc = FramesPage()
 
     def unique_id(self, id):
         for pro in self.news:
@@ -72,6 +72,7 @@ class Process_Admin:
             cont += 1
             tmp = Proceso(tms, self.id_control, operador, num1, num2)
             tmp.do_operation()
+            tmp.size = random.randint(5, 26)
             self.news.append(tmp)
             os.system("cls")
             self.id_control += 1
@@ -95,6 +96,11 @@ class Process_Admin:
                     self.keyboard_flag = "t"
                 else:
                     self.keyboard_flag = "c"
+            elif self.keyboard_flag == "a":
+                if leter != "c":
+                    self.keyboard_flag = "a"
+                else:
+                    self.keyboard_flag = "c"
             elif leter == "p":
                 self.keyboard_flag = "p"
                 print("Programa en pausa")
@@ -106,6 +112,10 @@ class Process_Admin:
                 self.keyboard_flag = "c"
             elif leter == "n":
                 self.keyboard_flag = "n"
+            elif leter == "a":
+                self.keyboard_flag = "a"
+                print("Paginacion")
+                self.table_proc.show_page()
             elif leter == "t":
                 self.keyboard_flag = "t"
                 print("BCP")
@@ -120,7 +130,9 @@ class Process_Admin:
             self.blocked[i].blocked_time += 1
             if self.blocked[i].blocked_time == 8:
                 self.blocked[i].blocked_time = 0
+                self.table_proc.update_status(self.blocked[i].id, "Ready")
                 self.ready.append(self.blocked.pop(i))
+
                 return True
         return False
 
@@ -190,23 +202,22 @@ class Process_Admin:
         num_pro = int(input("Cuantos procesos quieres: "))
         self.quantum = int(input("Ingrese el Quantum para RR: "))
         self.capture_process(num_pro)
-        # cont_ready = len(self.ready)
-        # cont_blocked = len(self.blocked)
-        # cont_in_execution = len(self.in_execution)
         while (not self.flag_done):
             cont_ready = len(self.ready)
             cont_blocked = len(self.blocked)
             cont_in_execution = len(self.in_execution)
             on_memory = cont_ready + cont_blocked + cont_in_execution
 
-            while (on_memory < 5 and len(self.news) > 0):
+            while (len(self.news) > 0 and self.table_proc.have_space(self.news[0].size)):
                 temp_proc = self.news.pop(0)
                 temp_proc.come_time = self.global_counter
                 self.ready.append(temp_proc)
                 on_memory += 1
                 cont_ready += 1
+                self.table_proc.add_process(
+                    temp_proc.id, "Ready", temp_proc.size)
 
-            if on_memory > 0 and cont_ready != 0:
+            if self.table_proc.space_memory() and cont_ready != 0:
                 if self.endless_flag:
                     self.in_execution.pop()
                     self.endless_flag = False
@@ -215,9 +226,11 @@ class Process_Admin:
                 if temp_proc.response_time == None:
                     temp_proc.response_time = self.global_counter - temp_proc.come_time
                 self.in_execution.append(temp_proc)
+                self.table_proc.update_status(temp_proc.id, "Exec")
             else:
                 self.in_execution.append(self.endless_process)
                 self.endless_flag = True
+                self.table_proc.update_status(temp_proc.id, "Exec")
 
             time_left = self.in_execution[0].time
             time_on = 0
@@ -231,6 +244,8 @@ class Process_Admin:
                 if not (time_q < self.quantum):
                     self.in_execution[0].time_remainder = self.in_execution[0].time - time_on
                     self.ready.append(self.in_execution[0])
+                    self.table_proc.update_status(
+                        self.in_execution[0].id, "Ready")
                     self.in_execution.pop()
                     quantum_flag = True
                     break
@@ -245,17 +260,21 @@ class Process_Admin:
 
                 if self.keyboard_flag == "p":
                     continue
+                elif self.keyboard_flag == "a":
+                    continue
                 elif self.keyboard_flag == "t":
-
                     continue
                 elif self.keyboard_flag == "e":
                     self.in_execution[0].result = "Error"
                     self.in_execution[0].end_time = self.global_counter
                     self.in_execution[0].execute_time = time_on
+                    self.table_proc.remove_frame(self.in_execution[0].id)
                     break
                 elif self.keyboard_flag == "i":
                     self.in_execution[0].time_remainder = self.in_execution[0].time - time_on
                     self.blocked.append(self.in_execution[0])
+                    self.table_proc.update_status(
+                        self.in_execution[0].id, "Blocked")
                     self.in_execution.pop()
                     break
                 elif self.keyboard_flag == "n":
@@ -270,6 +289,7 @@ class Process_Admin:
                 self.global_counter += 1
                 print(f"Procesos en la cola de nuevos {len(self.news)}")
                 print(f"Contador global: {self.global_counter}")
+                print(f"Quantum:  {self.quantum}")
                 self.update = self.update_bloked()
                 self.show_ready_queue()
                 self.show_in_execution(time_left, time_on)
@@ -290,6 +310,7 @@ class Process_Admin:
                     self.in_execution[0].end_time = self.global_counter
                 if self.in_execution[0].execute_time == None:
                     self.in_execution[0].execute_time = self.in_execution[0].time
+                self.table_proc.remove_frame(self.in_execution[0].id)
                 self.done.append(self.in_execution.pop(0))
             self.keyboard_flag = "c"
             if self.endless_flag:
